@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ic-webapp
+  namespace: icgroup
+  labels:
+    app: ic-webapp
+    env: prod
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ic-webapp
+      env: prod
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ic-webapp
+        env: prod
+    spec:
+      containers:
+      - name: ic-webapp
+        image: julios2/ic-webapp:1.0
+        ports:
+          - containerPort: 8080
+        env:
+          - name: ODOO_URL
+            value: http://192.168.56.10:30011
+          - name: PGADMIN_URL
+            value: http://192.168.56.10:30012

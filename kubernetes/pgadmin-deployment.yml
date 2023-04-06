@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pgadmin
+  namespace: icgroup
+  labels:
+    app: pgadmin
+    env: prod
+spec:
+  containers:
+  - name: pgadmin
+    image: dpage/pgadmin4:latest
+    ports:
+      - containerPort: 80
+    env:
+     - name: PGADMIN_DEFAULT_EMAIL
+       value: landojules535@yahoo.fr
+     - name: PGADMIN_DEFAULT_PASSWORD
+       valueFrom:
+         secretKeyRef:
+           name: pg-secrets
+           key: pgadmin_password
+    volumeMounts:
+      - mountPath:  /usr/local/pgsql-13
+        name: pgadmin-datas
+      - mountPath: /pgadmin4/servers.json
+        name: pgadmin-servers
+
+  volumes:
+    - name: pgadmin-datas
+      hostPath:
+        path: /pgadmin-data
+        type: Directory
+    - name: pgadmin-servers
+      hostPath:
+        path: configs/servers.json
+        type: FileOrCreate

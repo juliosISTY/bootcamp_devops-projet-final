@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ic-webapp
+    env: prod
+  name: service-a
+  namespace: icgroup
+spec:
+  ports:
+  - nodePort: 30010
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: ic-webapp
+  type: NodePort
+status:
+  loadBalancer: {}
