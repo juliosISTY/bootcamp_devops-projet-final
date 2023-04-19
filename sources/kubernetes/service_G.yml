@@ -10,9 +10,9 @@ metadata:
 spec:
   ports:
   - nodePort: 30012
-    port: 80
+    port: 5050  # app server port
     protocol: TCP
-    targetPort: 80
+    targetPort: 80  # pgadmin listener port
   selector:
     app: pgadmin
   type: NodePort

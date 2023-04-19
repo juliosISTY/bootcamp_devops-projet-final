@@ -43,5 +43,5 @@ spec:
       volumes:
       - name: odoo-web-datas
         hostPath:
-          path: /odoo-web-data
+          path: /k8s_data/odoo-web-data
           type: Directory

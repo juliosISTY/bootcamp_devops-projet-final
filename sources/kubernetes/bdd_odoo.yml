@@ -31,7 +31,7 @@ spec:
   volumes:
     - name: postgres-datas
       hostPath:
-        path: /odoo-db-data
+        path: /k8s_data/postgres-data
         type: Directory
 ---
 apiVersion: v1
