@@ -21,3 +21,19 @@ Types et rôles de chacune des ressources (A..H):
 - Ressource F: Pod joiniable via la ressource E
 
 
+## 3) Part 2: Setting up a CI pipeline with Jenkins
+
+### Jenkins Plugins to install 
+- Docker
+- Docker Pipeline
+- docker-build-step
+
+### Job Pipeline characteristics
+
+**Secrets parameters**
+- snyk_token
+- dockerhub-pwd
+
+*Trigger* : Scrutation de l'outil (* * * * *) ou webhook (A configurer dans Github)
+
+*Pipeline* : - Definition : Pipeline script from SCM > GIT - Branche : */main - Script Path : Jenkinsfile
