@@ -2,7 +2,7 @@ pipeline {
     environment {
         ID_DOCKER = "julios2"
         IMAGE_NAME = "ic-webapp"
-        SOURCES_PATH = "sources/ic-webapp/"
+        SOURCES_PATH = "./sources/ic-webapp"
         DOCKERFILE_NAME = "Dockerfile_v2"
         INTERNAL_PORT = 8080
         EXTERNAL_PORT = 80
@@ -15,7 +15,7 @@ pipeline {
                 script {
                     sh '''
                         export IMAGE_TAG=$( awk 'NR==3 {print $2}' $SOURCES_PATH/release.txt )
-                        docker build --no-cache -t ${ID_DOCKER}/$IMAGE_NAME:$IMAGE_TAG -f $DOCKERFILE_NAME $SOURCES_PATH
+                        docker build --no-cache -t ${ID_DOCKER}/$IMAGE_NAME:$IMAGE_TAG -f $SOURCES_PATH/$DOCKERFILE_NAME $SOURCES_PATH
                     '''
                 }
             }
