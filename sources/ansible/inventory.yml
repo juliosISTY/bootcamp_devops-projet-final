@@ -1,0 +1,11 @@
+---
+dev:
+  hosts:
+    ic_webapp_server_dev:
+    odoo_server_dev:
+    pgadmin_server_dev:
+prod:
+  hosts:
+    ic_webapp_server:
+    odoo_server:
+    pgadmin_server:

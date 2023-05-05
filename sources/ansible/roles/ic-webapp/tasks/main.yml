@@ -1,0 +1,19 @@
+---
+# Launch of ic-webapp application
+- name : "Launch ic-webapp container"
+  docker_container:
+    name: "{{ ic_webapp_container }}"
+    image: "{{ ic_webapp_image }}"
+    ports:
+      - "{{ ic_webapp_port }}:8080"
+    env:
+      ODOO_URL: "{{ odoo_url }}"
+      PGADMIN_URL: "{{ pgadmin_url }}"
+    networks:
+      - name: "{{ network_name }}"
+
+# debug output
+- debug:
+    msg:
+      - "Launch of ic-webapp is successfully complete."
+      - "Application expose port: {{ ic_webapp_port }}"

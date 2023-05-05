@@ -1,0 +1,9 @@
+---
+- hosts: 'prod'
+  vars:
+  pre_tasks:
+    - include_vars: ../roles/commun/main.yml
+    - name: Install python library
+      include_tasks: ../roles/install-docker/tasks/install_python-library_for_docker.yml
+  roles:
+    - role: ic-webapp

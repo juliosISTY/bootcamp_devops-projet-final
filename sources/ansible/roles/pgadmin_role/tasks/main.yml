@@ -1,0 +1,19 @@
+---
+# Launch of pgadmin application
+- name: Copy servers.json template file
+  template:
+    src: servers.json.j2
+    dest: /home/{{ ansible_user }}/servers.json
+    mode: 0655
+- name: Copy docker-compose template file
+  template:
+    src: docker-compose_pgadmin.yml.j2
+    dest: /home/{{ ansible_user }}/docker-compose_pgadmin.yml
+    mode: 0655
+- name : "Launch Odoo application"
+  command: docker-compose -f /home/{{ ansible_user }}/docker-compose_pgadmin.yml -d up
+
+# debug output
+- debug:
+    msg:
+      - "Launch of pgadmin is successfully complete."

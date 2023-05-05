@@ -1,0 +1,10 @@
+---
+# default vars for odoo
+odoo_web_container: ic-webapp
+odoo_web_image: "odoo:14.0"
+postgresql_container: postgresql
+postgresql_image: "postgres:13"
+odoo_data_volume: odoo-web-data
+postgres_data_volume: postgres-data
+
+

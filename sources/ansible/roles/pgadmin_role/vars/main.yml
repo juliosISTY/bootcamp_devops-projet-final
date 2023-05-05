@@ -1,0 +1,3 @@
+---
+# vars file for pgadmin
+host_postgres_ip: "10.0.1.5"

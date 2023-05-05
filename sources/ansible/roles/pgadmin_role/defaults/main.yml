@@ -1,0 +1,7 @@
+---
+# default vars for pgadmin
+pgadmin_container: pgadmin
+pgadmin_image: "dpage/pgadmin4:latest"
+pgadmin_data_volume: pgadmin-data
+pgadmin_default_email: landojules535@yahoo.fr
+postgresql_host: {{ host_postgres_ip }}  # from vars file

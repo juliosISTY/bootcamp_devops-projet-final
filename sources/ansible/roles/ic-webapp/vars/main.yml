@@ -1,0 +1,4 @@
+---
+# vars file for ic-webapp
+host_odoo_ip: "10.0.1.5"
+host_pgadmin_ip: "10.0.1.4"

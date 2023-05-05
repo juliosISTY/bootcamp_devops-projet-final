@@ -1,0 +1,36 @@
+version: '3.3'
+services:
+  {{ odoo_web_container }}:
+    container_name: {{ odoo_web_container }}
+    image: {{ odoo_web_image }}
+    depends_on:
+      - {{ postgresql_container }}
+    ports:
+      - "8069:8069"
+    volumes:
+      - {{odoo_data_volume}}:/var/lib/odoo
+    environment:
+      - PASSWORD={{ postgresql_password }}
+      - HOST={{ postgresql_container }}
+      - USER=odoo_user
+    networks:
+      - {{ network_name }}
+
+  {{ postgresql_container }}:
+    image: {{ postgresql_image }}
+    container_name: {{ postgresql_container }}
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD={{ postgresql_password }}
+      - POSTGRES_USER=odoo_user
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - {{ postgres_data_volume }}:/var/lib/postgresql/data/pgdata
+    networks:
+      - {{ network_name }}
+volumes:
+  {{ odoo_data_volume }}:
+  {{ postgres_data_volume }}:
+

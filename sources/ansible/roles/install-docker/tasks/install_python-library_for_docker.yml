@@ -1,0 +1,52 @@
+---
+- name: Install EPEL repo
+  yum:
+    name:
+      - epel-release
+    state: present
+  when: ansible_distribution == "CentOS"
+
+- name: Install pre-requisite packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - yum-utils
+    - device-mapper-persistent-data
+    - lvm2
+    - python3
+  when: ansible_distribution == "Amazon"
+
+# For python 2.7 version
+- name: download pip script
+  get_url:
+    url: https://bootstrap.pypa.io/pip/2.7/get-pip.py
+    dest: /tmp/get-pip.py
+  when: ansible_distribution == "CentOS"
+- name: install python-pip
+  command: python2.7 /tmp/get-pip.py
+  when: ansible_distribution == "CentOS"
+- name: Install docker python
+  pip: name=docker-py
+  when: ansible_distribution == "CentOS"
+
+# For python 3 version
+- name: download pip script
+  get_url:
+    url: https://bootstrap.pypa.io/pip/3.6/get-pip.py
+    dest: /tmp/get-pip.py
+  when: ansible_distribution == "Amazon"
+- name: install python-pip
+  command: python3 /tmp/get-pip.py
+  ignore_errors: yes
+  when: ansible_distribution == "Amazon"
+- name: Install docker python
+  pip:
+    name: docker-py
+    executable: /usr/local/bin/pip3
+  when: ansible_distribution == "Amazon"
+
+# Create network for applications
+- name : "create network"
+  docker_network:
+    name: "{{ network_name }}"

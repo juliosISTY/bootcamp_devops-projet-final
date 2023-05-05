@@ -1,0 +1,14 @@
+---
+# Launch of Odoo application
+- name: Copy docker-compose template file
+  template:
+    src: docker-compose_odoo.yml.j2
+    dest: /home/{{ ansible_user }}/docker-compose_odoo.yml
+    mode: 0655
+- name : "Launch Odoo application"
+  command: docker-compose -f /home/{{ ansible_user }}/docker-compose_odoo.yml -d up
+
+# debug output
+- debug:
+    msg:
+      - "Launch of Odoo web is successfully complete."
