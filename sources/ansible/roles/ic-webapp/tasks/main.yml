@@ -16,4 +16,4 @@
 - debug:
     msg:
       - "Launch of ic-webapp is successfully complete."
-      - "Application expose port: {{ ic_webapp_port }}"
+      - "Application host IP: {{ host_pgadmin_ip }} and expose port: {{ ic_webapp_port }}"

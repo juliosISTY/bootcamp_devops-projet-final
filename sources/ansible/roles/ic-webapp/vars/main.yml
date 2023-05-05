@@ -1,4 +1,4 @@
 ---
 # vars file for ic-webapp
-host_odoo_ip: {{ odoo_server }}
-host_pgadmin_ip: {{ ic_webapp_and_pgadmin_server }}
+host_odoo_ip: ""
+host_pgadmin_ip: ""

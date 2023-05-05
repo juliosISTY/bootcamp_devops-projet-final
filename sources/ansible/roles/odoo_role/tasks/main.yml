@@ -6,9 +6,9 @@
     dest: /home/{{ ansible_user }}/docker-compose_odoo.yml
     mode: 0655
 - name : "Launch Odoo application"
-  command: docker-compose -f /home/{{ ansible_user }}/docker-compose_odoo.yml -d up
+  command: docker-compose -f /home/{{ ansible_user }}/docker-compose_odoo.yml up -d
 
 # debug output
 - debug:
     msg:
-      - "Launch of Odoo web is successfully complete."
+      - "Launch of Odoo web and postgresql are successfully complete."

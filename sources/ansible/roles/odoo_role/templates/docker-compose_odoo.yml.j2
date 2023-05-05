@@ -33,4 +33,8 @@ services:
 volumes:
   {{ odoo_data_volume }}:
   {{ postgres_data_volume }}:
+networks:
+  {{ network_name }}:
+    driver: bridge
+    name: {{ network_name }}
 

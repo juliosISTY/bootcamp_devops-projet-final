@@ -1,18 +1,8 @@
 ---
-- hosts: dev
+- hosts: prod:dev
   become: true
-  tags: dev
   vars_files:
     - ../roles/commun/main.yml
     - ../secrets/credentials.yml
   roles:
-    - { role: odoo_role }
-
-- hosts: prod
-  become: true
-  tags: prod
-  vars_files:
-    - ../roles/commun/main.yml
-    - ../secrets/credentials.yml
-  roles:
-    - { role: odoo_role }
+    - role: ../roles/odoo_role

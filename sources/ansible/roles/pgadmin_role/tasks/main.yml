@@ -11,7 +11,7 @@
     dest: /home/{{ ansible_user }}/docker-compose_pgadmin.yml
     mode: 0655
 - name : "Launch Odoo application"
-  command: docker-compose -f /home/{{ ansible_user }}/docker-compose_pgadmin.yml -d up
+  command: docker-compose -f /home/{{ ansible_user }}/docker-compose_pgadmin.yml up -d
 
 # debug output
 - debug:

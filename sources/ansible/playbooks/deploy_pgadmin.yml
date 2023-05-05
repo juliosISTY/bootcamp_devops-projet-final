@@ -1,8 +1,8 @@
 ---
-- hosts: 'prod'
+- hosts: prod:dev
   become: true
   vars_files:
     - ../roles/commun/main.yml
     - ../secrets/credentials.yml
   roles:
-    - role: pgadmin_role
+    - role: ../roles/pgadmin_role
