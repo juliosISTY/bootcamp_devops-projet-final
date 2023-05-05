@@ -1,0 +1,8 @@
+---
+- hosts: 'prod'
+  become: true
+  vars_files:
+    - ../roles/commun/main.yml
+    - ../secrets/credentials.yml
+  roles:
+    - role: install-docker
