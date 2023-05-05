@@ -6,7 +6,7 @@
     - ../roles/commun/main.yml
     - ../secrets/credentials.yml
   roles:
-    - { role: install-docker }
+    - role: ../roles/install-docker
 
 - hosts: prod
   become: true

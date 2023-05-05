@@ -37,3 +37,8 @@ Types et rôles de chacune des ressources (A..H):
 *Trigger* : Scrutation de l'outil (* * * * *) ou webhook (A configurer dans Github)
 
 *Pipeline* : - Definition : Pipeline script from SCM > GIT - Branche : */main - Script Path : Jenkinsfile
+
+## 4) Part 2: Setting up a CD with Ansible and Terraform
+
+### Setting up Ansible sources files
+Before you launch the Jenkins Pipeline, you must set or update hosts variables and vars/main.yml in ic-webapp and pgadmin roles for **prod** environment.
