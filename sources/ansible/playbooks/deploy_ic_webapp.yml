@@ -1,8 +1,18 @@
 ---
-- hosts: 'prod'
+- hosts: dev
   become: true
+  tags: dev
   vars_files:
     - ../roles/commun/main.yml
     - ../secrets/credentials.yml
   roles:
-    - role: ic-webapp
+    - { role: ic-webapp }
+
+- hosts: prod
+  become: true
+  tags: prod
+  vars_files:
+    - ../roles/commun/main.yml
+    - ../secrets/credentials.yml
+  roles:
+    - { role: ic-webapp }

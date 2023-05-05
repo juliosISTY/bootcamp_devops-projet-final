@@ -1,8 +1,24 @@
 ---
-- hosts: 'prod'
+- hosts: dev
   become: true
+  tags: dev
   vars_files:
     - ../roles/commun/main.yml
     - ../secrets/credentials.yml
   roles:
-    - role: install-docker
+    - { role: install-docker }
+
+- hosts: prod
+  become: true
+  tags: prod
+  vars_files:
+    - ../roles/commun/main.yml
+    - ../secrets/credentials.yml
+  tasks:
+    - name: Install docker-compose
+      get_url:
+        url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
+        dest: /usr/bin/docker-compose
+        mode: 0755
+    - name: Install python library
+      include_tasks: ../roles/install-docker/tasks/install_python-library_for_docker.yml

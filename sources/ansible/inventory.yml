@@ -1,11 +1,9 @@
 ---
 dev:
   hosts:
-    ic_webapp_server_dev:
-    odoo_server_dev:
-    pgadmin_server_dev:
+    aws_ec2_server:
 prod:
   hosts:
-    ic_webapp_server:
+    ic_webapp_and_pgadmin_server:
     odoo_server:
-    pgadmin_server:
+
