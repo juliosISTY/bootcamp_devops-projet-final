@@ -1,8 +1,9 @@
 ---
 - hosts: 'prod'
-  vars:
+  vars_files:
+    - ../roles/commun/main.yml
+    - ../secrets/credentials.yml
   pre_tasks:
-    - include_vars: ../roles/commun/main.yml
     - name: Install python library
       include_tasks: ../roles/install-docker/tasks/install_python-library_for_docker.yml
   roles:
