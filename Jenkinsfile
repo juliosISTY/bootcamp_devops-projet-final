@@ -94,7 +94,7 @@ pipeline {
                 }
             }
         }*/
-        /*stage ('Build EC2 instance on AWS with Terraform') {
+        stage ('Build EC2 instance on AWS with Terraform') {
             agent {
                 docker { image 'jenkins/jnlp-agent-terraform'}
             }
@@ -120,29 +120,29 @@ pipeline {
                         cd ./sources/terraform/app
                         terraform init
                         #terraform destroy --auto-approve
-                        #terraform plan
-                        #terraform apply --auto-approve
+                        terraform plan
+                        terraform apply --auto-approve
                     '''
                 }
             }
-        }*/
-        /*stage ('Preparing Dev environment') {
+        }
+        stage ('Preparing Dev environment') {
             agent any
             steps {
                 script {
                     sh '''
                         echo "Generating host_vars for EC2 server"
-                        echo "ansible_host: $( awk '{print $2}' /var/jenkins_home/workspace/projet_final/public_ip.txt )" > sources/ansible/host_vars/aws_ec2_server.yml
+                        echo "ansible_host: $( awk '{print $3}' /var/jenkins_home/workspace/projet_final/public_ip.txt )" > sources/ansible/host_vars/aws_ec2_server.yml
                         echo -e "Update image_tag in $IC_WEBAPP_SOURCE_VARS"
                         echo "image_tag: '1.0'" > $IC_WEBAPP_SOURCE_VARS
                         echo -e "Update host_odoo_ip and host_pgadmin_ip in $IC_WEBAPP_SOURCE_VARS"
-                        echo "host_odoo_ip: $( awk '{print $2}' /var/jenkins_home/workspace/projet_final/public_ip.txt )" >> $IC_WEBAPP_SOURCE_VARS
-                        echo -e "host_pgadmin_ip: $( awk '{print $2}' /var/jenkins_home/workspace/projet_final/public_ip.txt )" >> $IC_WEBAPP_SOURCE_VARS
+                        echo "host_odoo_ip: $( awk '{print $3}' /var/jenkins_home/workspace/projet_final/public_ip.txt )" >> $IC_WEBAPP_SOURCE_VARS
+                        echo -e "host_pgadmin_ip: $( awk '{print $3}' /var/jenkins_home/workspace/projet_final/public_ip.txt )" >> $IC_WEBAPP_SOURCE_VARS
 
                     '''
                 }
             }
-        }*/
+        }
         stage('Preparing Ansible environment') {
             agent any
             environment {
@@ -215,7 +215,7 @@ pipeline {
                 }
             }
         }*/
-        /*stage ('Removal Dev environment') {
+        stage ('Removal Dev environment') {
             agent {
                 docker { image 'jenkins/jnlp-agent-terraform'}
             }
@@ -238,7 +238,7 @@ pipeline {
                     '''
                 }
             }
-        }*/
+        }
         stage ('Preparing Prod environment') {
             agent any
             environment {
