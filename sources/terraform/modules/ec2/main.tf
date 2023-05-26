@@ -8,7 +8,7 @@ resource "aws_instance" "ec2_vm" {
   security_groups = ["${var.sg_name}"]
 
   provisioner "local-exec" {
-    command = "echo PUBLIC IP: ${var.public_ip} > /var/jenkins_home/workspace/ic-webapp/public_ip.txt"
+    command = "echo PUBLIC IP: ${var.public_ip} > /var/jenkins_home/workspace/${var.project_name}/public_ip.txt"
   }
 
   root_block_device {

@@ -24,3 +24,7 @@ variable "ssh_key" {
   type    = string
   default = "devops"
 }
+variable "project_name" {
+  type    = string
+  default = "projet_final"
+}

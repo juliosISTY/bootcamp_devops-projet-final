@@ -8,6 +8,7 @@ pipeline {
         DOCKERFILE_NAME = "Dockerfile_v2"
         INTERNAL_PORT = 8080
         EXTERNAL_PORT = 80
+        PROJECT_NAME = "projet_final"
     }
     agent none
     stages {
@@ -118,9 +119,9 @@ pipeline {
                         chmod 400 devops.pem
                         cd ./sources/terraform/app
                         terraform init
-                        terraform destroy --auto-approve
-                        #terraform plan
-                        #terraform apply --auto-approve
+                        #terraform destroy --auto-approve
+                        terraform plan
+                        terraform apply --auto-approve
                     '''
                 }
             }
@@ -131,12 +132,12 @@ pipeline {
                 script {
                     sh '''
                         echo "Generating host_vars for EC2 server"
-                        echo "ansible_host: $( awk '{print $2}' /var/jenkins_home/workspace/ic-webapp/public_ip.txt )" > sources/ansible/host_vars/aws_ec2_server.yml
+                        echo "ansible_host: $( awk '{print $2}' /var/jenkins_home/workspace/projet_final/public_ip.txt )" > sources/ansible/host_vars/aws_ec2_server.yml
                         echo -e "Update image_tag in $IC_WEBAPP_SOURCE_VARS"
                         echo "image_tag: '1.0'" > $IC_WEBAPP_SOURCE_VARS
                         echo -e "Update host_odoo_ip and host_pgadmin_ip in $IC_WEBAPP_SOURCE_VARS"
-                        echo "host_odoo_ip: $( awk '{print $2}' /var/jenkins_home/workspace/ic-webapp/public_ip.txt )" >> $IC_WEBAPP_SOURCE_VARS
-                        echo -e "host_pgadmin_ip: $( awk '{print $2}' /var/jenkins_home/workspace/ic-webapp/public_ip.txt )" >> $IC_WEBAPP_SOURCE_VARS
+                        echo "host_odoo_ip: $( awk '{print $2}' /var/jenkins_home/workspace/projet_final/public_ip.txt )" >> $IC_WEBAPP_SOURCE_VARS
+                        echo -e "host_pgadmin_ip: $( awk '{print $2}' /var/jenkins_home/workspace/projet_final/public_ip.txt )" >> $IC_WEBAPP_SOURCE_VARS
 
                     '''
                 }
@@ -145,7 +146,7 @@ pipeline {
         stage('Preparing Ansible environment') {
             agent any
             environment {
-                VAULT_KEY = credentials('vault.key')
+                VAULT_KEY = credentials('vaultkey')
             }
             steps {
                 script {
