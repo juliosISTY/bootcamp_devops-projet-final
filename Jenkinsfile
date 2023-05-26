@@ -120,13 +120,13 @@ pipeline {
                         cd ./sources/terraform/app
                         terraform init
                         #terraform destroy --auto-approve
-                        terraform plan
-                        terraform apply --auto-approve
+                        #terraform plan
+                        #terraform apply --auto-approve
                     '''
                 }
             }
         }
-        stage ('Preparing Dev environment') {
+        /*stage ('Preparing Dev environment') {
             agent any
             steps {
                 script {
@@ -142,7 +142,7 @@ pipeline {
                     '''
                 }
             }
-        }
+        }*/
         stage('Preparing Ansible environment') {
             agent any
             environment {
@@ -158,7 +158,7 @@ pipeline {
                 }
             }
         }
-        stage ('Deploy applications in Dev environment') {
+        /*stage ('Deploy applications in Dev environment') {
             agent { docker { image 'registry.gitlab.com/robconnolly/docker-ansible:latest' } }
             stages{
                 stage('Test all playbooks syntax'){
@@ -214,7 +214,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
         stage ('Removal Dev environment') {
             agent {
                 docker { image 'jenkins/jnlp-agent-terraform'}
