@@ -11,7 +11,7 @@ pipeline {
     }
     agent none
     stages {
-        stage('Build image') {
+        /*stage('Build image') {
             agent any
             steps {
                 script {
@@ -92,7 +92,7 @@ pipeline {
                     '''
                 }
             }
-        }
+        }*/
         stage('Preparing Ansible environment') {
             agent any
             environment {
