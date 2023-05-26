@@ -40,5 +40,29 @@ Types et rôles de chacune des ressources (A..H):
 
 ## 4) Part 2: Setting up a CD with Ansible and Terraform
 
+### Prérequis
+- S'assurer de la présence du VPC par défaut en région Virginie du Nord, ainsi que son Network et Security Group par default.
+- Générer des credentials dans AWS (access_key, ecret_key et une key_pair)
+- Configurer les secret et paramètres dans Jenkins
+
 ### Setting up Ansible sources files
-Before you launch the Jenkins Pipeline, you must set or update hosts variables and vars/main.yml in ic-webapp and pgadmin roles for **prod** environment.
+Before you launch the Jenkins Pipeline, you must set or update **hosts variables** and **release.txt** for **prod** environment.
+
+### Configuration du Jenkinsfile pour intégrer le déploiement Ansible
+
+##### Secret et paramètres
+En plus des paramètres et tokens utilisé à la partie CI, on aura aussi besoin des paramètres suivants : 
+
+
+|                      | Type        |Default Value   | Description               |
+|----------------------|-------------|----------------|---------------------------|
+| vault_key            | secret text |      N/A       | Mot de pass vault ansible |
+| sudopass             | secret text |      N/A       | mdp pour le become user   |
+| aws_access_key_id    | secret text |      N/A       | access key aws            |
+| aws_secret_access_key | secret text |      N/A       | secret key aws            |
+| private_aws_key      | secret file |      N/A       | Clés privé  ec2-user      |
+
+##### Ports applicatif configuré
+- ic-webapp : 8000
+- odoo : 8069
+- pgadmin : 5050

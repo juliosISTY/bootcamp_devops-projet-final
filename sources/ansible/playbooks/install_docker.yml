@@ -10,7 +10,16 @@
 
 - hosts: prod
   become: true
-  tags: prod
+  tags: on_labs
+  vars_files:
+    - ../roles/commun/main.yml
+    - ../secrets/credentials.yml
+  roles:
+    - role: ../roles/install-docker
+
+- hosts: prod
+  become: true
+  tags: eazy_labs
   vars_files:
     - ../roles/commun/main.yml
     - ../secrets/credentials.yml

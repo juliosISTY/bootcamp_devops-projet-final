@@ -1,4 +1,5 @@
 ---
 # vars file for ic-webapp
-host_odoo_ip: ""
-host_pgadmin_ip: ""
+image_tag: "1.0"
+host_odoo_ip: "127.0.0.1" # default value
+host_pgadmin_ip: "127.0.0.1"  # default value

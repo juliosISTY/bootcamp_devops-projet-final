@@ -2,7 +2,9 @@ pipeline {
     environment {
         ID_DOCKER = "julios2"
         IMAGE_NAME = "ic-webapp"
-        SOURCES_PATH = "./sources/ic-webapp"
+        SOURCES_PATH = "$PWD/sources/ic-webapp"
+        PGADMIN_SOURCE_VARS = "$PWD/sources/ansible/roles/pgadmin_role/vars/main.yml"
+        IC_WEBAPP_SOURCE_VARS = "$PWD/sources/ansible/roles/ic-webapp/vars/main.yml"
         DOCKERFILE_NAME = "Dockerfile_v2"
         INTERNAL_PORT = 8080
         EXTERNAL_PORT = 80
@@ -37,7 +39,7 @@ pipeline {
                 }
             }
         }
-        stage('Run container based on builded image') {
+        stage('Run container based on building image') {
             agent any
             steps {
                 script {
@@ -88,6 +90,221 @@ pipeline {
                         echo $DOCKERHUB_PASSWORD | docker login -u $ID_DOCKER --password-stdin
                         docker push ${ID_DOCKER}/$IMAGE_NAME:$IMAGE_TAG
                     '''
+                }
+            }
+        }
+        stage('Preparing Ansible environment') {
+            agent any
+            environment {
+                VAULT_KEY = credentials('vault.key')
+            }
+            steps {
+                script {
+                    sh '''
+                        echo "Generating vault key"
+                        echo -e $VAULT_KEY > vault.key
+                    '''
+
+                }
+            }
+        }
+        stage ('Build EC2 instance on AWS with Terraform') {
+            agent {
+                docker { image 'jenkins/jnlp-agent-terraform'}
+            }
+            environment {
+                AWS_ACCESS_KEY_ID = credentials('aws_access_key_id')
+                AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
+                PRIVATE_AWS_KEY = credentials('private_aws_key')
+            }
+            steps {
+                script {
+                    sh '''
+                        echo "Generating aws credentials"
+                        echo "Delete older if exist"
+                        rm -rf devops.pem ~/.aws
+                        mkdir -p ~/.aws
+                        echo "[default]" > ~/.aws/credentials
+                        echo -e "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
+                        echo -e "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
+                        chmod 400 ~/.aws/credentials
+                        echo "Generating aws private key"
+                        cp $PRIVATE_AWS_KEY devops.pem
+                        chmod 400 devops.pem
+                        cd ./sources/terraform/app
+                        terraform init
+                        terraform plan
+                        terraform apply --auto-approve
+                    '''
+                }
+            }
+        }
+        stage ('Preparing Dev environment') {
+            agent any
+            steps {
+                script {
+                    sh '''
+                        echo "Generating host_vars for EC2 server"
+                        echo "ansible_host: $( awk '{print $2}' /var/jenkins_home/workspace/ic-webapp/public_ip.txt )" > sources/ansible/host_vars/aws_ec2_server.yml
+                        echo -e "Update image_tag in $IC_WEBAPP_SOURCE_VARS"
+                        echo "image_tag: '1.0'" > $IC_WEBAPP_SOURCE_VARS
+                        echo -e "Update host_odoo_ip and host_pgadmin_ip in $IC_WEBAPP_SOURCE_VARS"
+                        echo "host_odoo_ip: $( awk '{print $2}' /var/jenkins_home/workspace/ic-webapp/public_ip.txt )" >> $IC_WEBAPP_SOURCE_VARS
+                        echo -e "host_pgadmin_ip: $( awk '{print $2}' /var/jenkins_home/workspace/ic-webapp/public_ip.txt )" >> $IC_WEBAPP_SOURCE_VARS
+
+                    '''
+                }
+            }
+        }
+        stage ('Deploy applications in Dev environment') {
+            agent { docker { image 'registry.gitlab.com/robconnolly/docker-ansible:latest' } }
+            stages{
+                stage('Test all playbooks syntax'){
+                    steps {
+                        script {
+                            sh '''
+                                apt update
+                                apt install sshpass -y
+                                export ANSIBLE_CONFIG = $PWD/sources/ansible/ansible.cfg
+                                ansible-lint -x 306 sources/ansible/playbooks/* || echo passing linter
+                            '''
+                        }
+                    }
+                }
+                stage('Install requirements: Docker and python library for docker'){
+                    steps {
+                        script {
+                            sh '''
+                                export ANSIBLE_CONFIG = $PWD/sources/ansible/ansible.cfg
+                                ansible-playbook $PWD/sources/ansible/playbooks/install_docker.yml --tags dev --vault_password_file vault.key --private-key devops.pem
+                            '''
+                        }
+                    }
+                }
+                stage('Deploy Odoo application in Dev'){
+                    steps {
+                        script {
+                            sh '''
+                                export ANSIBLE_CONFIG = $PWD/sources/ansible/ansible.cfg
+                                ansible-playbook $PWD/sources/ansible/playbooks/deploy_odoo.yml --vault_password_file vault.key --private-key devops.pem
+                            '''
+                        }
+                    }
+                }
+                stage('Deploy Pgadmin application in Dev'){
+                    steps {
+                        script {
+                            sh '''
+                                export ANSIBLE_CONFIG = $PWD/sources/ansible/ansible.cfg
+                                ansible-playbook $PWD/sources/ansible/playbooks/deploy_pgadmin.yml --vault_password_file vault.key --private-key devops.pem
+                            '''
+                        }
+                    }
+                }
+                stage('Deploy ic-webapp application in Dev'){
+                    steps {
+                        script {
+                            sh '''
+                                export ANSIBLE_CONFIG = $PWD/sources/ansible/ansible.cfg
+                                ansible-playbook $PWD/sources/ansible/playbooks/deploy_ic_webapp.yml --vault_password_file vault.key --private-key devops.pem
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        stage ('Removal Dev environment') {
+            agent {
+                docker { image 'jenkins/jnlp-agent-terraform'}
+            }
+            steps {
+                script {
+                    timeout(time: 30, unit: "MINUTES"){
+                        input message: "Do you confirm removal of Dev environment on AWS ?", ok: 'Yes'
+                    }
+                    sh '''
+                        cd sources/terraform/app
+                        terraform destroy --auto-approve
+                        rm sources/ansible/host_vars/aws_ec2_server.yml
+                        echo "Dev environment successful remove"
+                    '''
+                }
+            }
+        }
+        stage ('Preparing Prod environment') {
+            agent any
+            environment {
+                HOST_ODOO_IP_PROD = "127.0.0.1"   /*default value you can ignore*/
+                HOST_PGADMIN_IP_PROD = "127.0.0.1"    /*default value you can ignore*/
+            }
+            steps {
+                script {
+                    sh '''
+                        echo -e "Update host_postgres_ip in $PGADMIN_SOURCE_VARS"
+                        echo -e "host_postgres_ip: $HOST_ODOO_IP_PROD" > $PGADMIN_SOURCE_VARS
+                        echo -e "Update image_tag in $IC_WEBAPP_SOURCE_VARS"
+                        echo "image_tag: '2.0'" > $IC_WEBAPP_SOURCE_VARS
+                        echo -e "Update host_odoo_ip and host_pgadmin_ip in $IC_WEBAPP_SOURCE_VARS"
+                        echo -e "host_odoo_ip: $HOST_ODOO_IP_PROD" >> $IC_WEBAPP_SOURCE_VARS
+                        echo -e "host_pgadmin_ip: $HOST_PGADMIN_IP_PROD" >> $IC_WEBAPP_SOURCE_VARS
+
+                    '''
+                }
+            }
+        }
+        stage ('Deploy applications in Prod environment') {
+            agent { docker { image 'registry.gitlab.com/robconnolly/docker-ansible:latest' } }
+            when {
+                       expression { GIT_BRANCH == 'origin/master' }
+                    }
+            environment {
+                SUDOPASS = credentials('sudopass')
+            }
+            stages{
+                stage('Install requirements: Docker and python library for docker'){
+                    steps {
+                        script {
+                            timeout(time: 30, unit: "MINUTES"){
+                                input message: "Do you confirm the MEP of applications ?", ok: 'Yes'
+                            }
+                            sh '''
+                                apt update
+                                apt install sshpass -y
+                                export ANSIBLE_CONFIG = $PWD/sources/ansible/ansible.cfg
+                                ansible-playbook $PWD/sources/ansible/playbooks/install_docker.yml --tags on_labs --vault_password_file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS"
+                            '''
+                        }
+                    }
+                }
+                stage('Deploy Odoo application in prod'){
+                    steps {
+                        script {
+                            sh '''
+                                export ANSIBLE_CONFIG = $PWD/sources/ansible/ansible.cfg
+                                ansible-playbook $PWD/sources/ansible/playbooks/deploy_odoo.yml --vault_password_file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -l odoo_server
+                            '''
+                        }
+                    }
+                }
+                stage('Deploy Pgadmin application in prod'){
+                    steps {
+                        script {
+                            sh '''
+                                export ANSIBLE_CONFIG = $PWD/sources/ansible/ansible.cfg
+                                ansible-playbook $PWD/sources/ansible/playbooks/deploy_pgadmin.yml --vault_password_file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -l ic_webapp_and_pgadmin_server
+                            '''
+                        }
+                    }
+                }
+                stage('Deploy ic-webapp application in prod'){
+                    steps {
+                        script {
+                            sh '''
+                                export ANSIBLE_CONFIG = $PWD/sources/ansible/ansible.cfg
+                                ansible-playbook $PWD/sources/ansible/playbooks/deploy_ic_webapp.yml --vault_password_file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -l ic_webapp_and_pgadmin_server
+                            '''
+                        }
+                    }
                 }
             }
         }

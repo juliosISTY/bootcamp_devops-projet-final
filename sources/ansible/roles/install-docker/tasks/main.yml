@@ -1,9 +1,11 @@
 ---
 # Install Docker engine
+
 - name: Update System
   yum:
     name: "*"
     state: latest
+  when: ansible_distribution == "Amazon" or ansible_distribution == "CentOS"
 
 - name: Add Docker CE repo
   get_url:
@@ -11,11 +13,45 @@
     dest: /etc/yum.repos.d/docker-ce.repo
   when: ansible_distribution == "CentOS"
 
+- name: Install required system packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  loop:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+    - python3-pip
+    - python3-setuptools
+  when: ansible_os_family == "Debian"
+
+- name: Add Docker GPG apt Key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Add Docker Repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu focal stable
+    state: present
+  when: ansible_os_family == "Debian"
+
 - name: Install Docker on CentOS
   yum:
-    name: docker
+    name: docker-ce
     state: latest
   when: ansible_distribution == "CentOS"
+
+- name: Install Docker on Debian and derived
+  apt:
+    name: docker-ce
+    state: latest
+    update_cache: true
+    cache_valid_time: 3600
+  when: ansible_os_family == "Debian"
 
 - name: "Install Docker on Amazon Linux"
   command: amazon-linux-extras install docker -y
@@ -36,16 +72,16 @@
     append: yes
   when: ansible_distribution == "CentOS"
 
-- name: Add remote user to docker group on EC2
+- name: Add remote user to docker group on EC2 or Debian OS
   user:
     name: "{{ ansible_user }}"
     groups: docker
     append: yes
-  when: ansible_distribution == "Amazon"
+  when: ansible_distribution == "Amazon" or ansible_os_family == "Debian"
 
 - name: Install docker-compose
   get_url:
-    url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
+    url: https://github.com/docker/compose/releases/download/v2.18.1/docker-compose-Linux-x86_64
     dest: /usr/bin/docker-compose
     mode: 0755
 
