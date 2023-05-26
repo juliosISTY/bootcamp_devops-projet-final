@@ -94,7 +94,7 @@ pipeline {
                 }
             }
         }*/
-        stage ('Build EC2 instance on AWS with Terraform') {
+        /*stage ('Build EC2 instance on AWS with Terraform') {
             agent {
                 docker { image 'jenkins/jnlp-agent-terraform'}
             }
@@ -142,7 +142,7 @@ pipeline {
                     '''
                 }
             }
-        }
+        }*/
         stage('Preparing Ansible environment') {
             agent any
             environment {
@@ -215,7 +215,7 @@ pipeline {
                 }
             }
         }*/
-        stage ('Removal Dev environment') {
+        /*stage ('Removal Dev environment') {
             agent {
                 docker { image 'jenkins/jnlp-agent-terraform'}
             }
@@ -238,7 +238,7 @@ pipeline {
                     '''
                 }
             }
-        }
+        }*/
         stage ('Preparing Prod environment') {
             agent any
             environment {
