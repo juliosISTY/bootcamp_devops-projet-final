@@ -93,21 +93,6 @@ pipeline {
                 }
             }
         }*/
-        stage('Preparing Ansible environment') {
-            agent any
-            environment {
-                VAULT_KEY = credentials('vault.key')
-            }
-            steps {
-                script {
-                    sh '''
-                        echo "Generating vault key"
-                        echo -e $VAULT_KEY > vault.key
-                    '''
-
-                }
-            }
-        }
         stage ('Build EC2 instance on AWS with Terraform') {
             agent {
                 docker { image 'jenkins/jnlp-agent-terraform'}
@@ -153,6 +138,21 @@ pipeline {
                         echo -e "host_pgadmin_ip: $( awk '{print $2}' /var/jenkins_home/workspace/ic-webapp/public_ip.txt )" >> $IC_WEBAPP_SOURCE_VARS
 
                     '''
+                }
+            }
+        }
+        stage('Preparing Ansible environment') {
+            agent any
+            environment {
+                VAULT_KEY = credentials('vault.key')
+            }
+            steps {
+                script {
+                    sh '''
+                        echo "Generating vault key"
+                        echo -e $VAULT_KEY > vault.key
+                    '''
+
                 }
             }
         }
@@ -255,7 +255,7 @@ pipeline {
         stage ('Deploy applications in Prod environment') {
             agent { docker { image 'registry.gitlab.com/robconnolly/docker-ansible:latest' } }
             when {
-                       expression { GIT_BRANCH == 'origin/master' }
+                       expression { GIT_BRANCH == 'origin/main' }
                     }
             environment {
                 SUDOPASS = credentials('sudopass')
