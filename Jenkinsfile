@@ -119,14 +119,14 @@ pipeline {
                         chmod 400 devops.pem
                         cd ./sources/terraform/app
                         terraform init
-                        #terraform destroy --auto-approve
-                        terraform plan
-                        terraform apply --auto-approve
+                        terraform destroy --auto-approve
+                        #terraform plan
+                        #terraform apply --auto-approve
                     '''
                 }
             }
         }
-        stage ('Preparing Dev environment') {
+        /*stage ('Preparing Dev environment') {
             agent any
             steps {
                 script {
@@ -167,7 +167,7 @@ pipeline {
                             sh '''
                                 apt update
                                 apt install sshpass -y
-                                export ANSIBLE_CONFIG = $PWD/sources/ansible/ansible.cfg
+                                export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
                                 ansible-lint -x 306 sources/ansible/playbooks/* || echo passing linter
                             '''
                         }
@@ -177,8 +177,8 @@ pipeline {
                     steps {
                         script {
                             sh '''
-                                export ANSIBLE_CONFIG = $PWD/sources/ansible/ansible.cfg
-                                ansible-playbook $PWD/sources/ansible/playbooks/install_docker.yml --tags dev --vault_password_file vault.key --private-key devops.pem
+                                export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
+                                ansible-playbook sources/ansible/playbooks/install_docker.yml --tags dev --vault_password_file vault.key --private-key devops.pem
                             '''
                         }
                     }
@@ -187,8 +187,8 @@ pipeline {
                     steps {
                         script {
                             sh '''
-                                export ANSIBLE_CONFIG = $PWD/sources/ansible/ansible.cfg
-                                ansible-playbook $PWD/sources/ansible/playbooks/deploy_odoo.yml --vault_password_file vault.key --private-key devops.pem
+                                export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
+                                ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --vault_password_file vault.key --private-key devops.pem
                             '''
                         }
                     }
@@ -197,8 +197,8 @@ pipeline {
                     steps {
                         script {
                             sh '''
-                                export ANSIBLE_CONFIG = $PWD/sources/ansible/ansible.cfg
-                                ansible-playbook $PWD/sources/ansible/playbooks/deploy_pgadmin.yml --vault_password_file vault.key --private-key devops.pem
+                                export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
+                                ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --vault_password_file vault.key --private-key devops.pem
                             '''
                         }
                     }
@@ -207,8 +207,8 @@ pipeline {
                     steps {
                         script {
                             sh '''
-                                export ANSIBLE_CONFIG = $PWD/sources/ansible/ansible.cfg
-                                ansible-playbook $PWD/sources/ansible/playbooks/deploy_ic_webapp.yml --vault_password_file vault.key --private-key devops.pem
+                                export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
+                                ansible-playbook sources/ansible/playbooks/deploy_ic_webapp.yml --vault_password_file vault.key --private-key devops.pem
                             '''
                         }
                     }
@@ -232,13 +232,13 @@ pipeline {
                     '''
                 }
             }
-        }
-        stage ('Preparing Prod environment') {
+        }*/
+        /*stage ('Preparing Prod environment') {
             agent any
             environment {
                 HOST_ODOO_IP_PROD = "127.0.0.1"   /*default value you can ignore*/
-                HOST_PGADMIN_IP_PROD = "127.0.0.1"    /*default value you can ignore*/
-            }
+            /*    HOST_PGADMIN_IP_PROD = "127.0.0.1"    /*default value you can ignore*/
+            /*}
             steps {
                 script {
                     sh '''
@@ -253,8 +253,8 @@ pipeline {
                     '''
                 }
             }
-        }
-        stage ('Deploy applications in Prod environment') {
+        }*/
+        /*stage ('Deploy applications in Prod environment') {
             agent { docker { image 'registry.gitlab.com/robconnolly/docker-ansible:latest' } }
             when {
                        expression { GIT_BRANCH == 'origin/main' }
@@ -272,8 +272,8 @@ pipeline {
                             sh '''
                                 apt update
                                 apt install sshpass -y
-                                export ANSIBLE_CONFIG = $PWD/sources/ansible/ansible.cfg
-                                ansible-playbook $PWD/sources/ansible/playbooks/install_docker.yml --tags on_labs --vault_password_file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS"
+                                export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
+                                ansible-playbook sources/ansible/playbooks/install_docker.yml --tags on_labs --vault_password_file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS"
                             '''
                         }
                     }
@@ -282,8 +282,8 @@ pipeline {
                     steps {
                         script {
                             sh '''
-                                export ANSIBLE_CONFIG = $PWD/sources/ansible/ansible.cfg
-                                ansible-playbook $PWD/sources/ansible/playbooks/deploy_odoo.yml --vault_password_file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -l odoo_server
+                                export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
+                                ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --vault_password_file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -l odoo_server
                             '''
                         }
                     }
@@ -292,8 +292,8 @@ pipeline {
                     steps {
                         script {
                             sh '''
-                                export ANSIBLE_CONFIG = $PWD/sources/ansible/ansible.cfg
-                                ansible-playbook $PWD/sources/ansible/playbooks/deploy_pgadmin.yml --vault_password_file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -l ic_webapp_and_pgadmin_server
+                                export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
+                                ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --vault_password_file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -l ic_webapp_and_pgadmin_server
                             '''
                         }
                     }
@@ -302,13 +302,13 @@ pipeline {
                     steps {
                         script {
                             sh '''
-                                export ANSIBLE_CONFIG = $PWD/sources/ansible/ansible.cfg
-                                ansible-playbook $PWD/sources/ansible/playbooks/deploy_ic_webapp.yml --vault_password_file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -l ic_webapp_and_pgadmin_server
+                                export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
+                                ansible-playbook sources/ansible/playbooks/deploy_ic_webapp.yml --vault_password_file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -l ic_webapp_and_pgadmin_server
                             '''
                         }
                     }
                 }
             }
-        }
+        }*/
     }
 }
