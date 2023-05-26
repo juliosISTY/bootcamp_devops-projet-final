@@ -119,9 +119,9 @@ pipeline {
                         chmod 400 devops.pem
                         cd ./sources/terraform/app
                         terraform init
-                        terraform destroy --auto-approve
-                        terraform plan
-                        terraform apply --auto-approve
+                        #terraform destroy --auto-approve
+                        #terraform plan
+                        #terraform apply --auto-approve
                     '''
                 }
             }
@@ -219,6 +219,11 @@ pipeline {
             agent {
                 docker { image 'jenkins/jnlp-agent-terraform'}
             }
+            environment {
+                AWS_ACCESS_KEY_ID = credentials('aws_access_key_id')
+                AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
+                PRIVATE_AWS_KEY = credentials('private_aws_key')
+            }
             steps {
                 script {
                     timeout(time: 30, unit: "MINUTES"){
@@ -227,7 +232,8 @@ pipeline {
                     sh '''
                         cd sources/terraform/app
                         terraform destroy --auto-approve
-                        rm sources/ansible/host_vars/aws_ec2_server.yml
+                        rm -rf sources/ansible/host_vars/aws_ec2_server.yml
+                        rm -rf devops.pem
                         echo "Dev environment successful remove"
                     '''
                 }
