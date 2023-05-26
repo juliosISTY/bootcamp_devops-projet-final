@@ -94,7 +94,7 @@ pipeline {
                 }
             }
         }*/
-        stage ('Build EC2 instance on AWS with Terraform') {
+        /*stage ('Build EC2 instance on AWS with Terraform') {
             agent {
                 docker { image 'jenkins/jnlp-agent-terraform'}
             }
@@ -125,7 +125,7 @@ pipeline {
                     '''
                 }
             }
-        }
+        }*/
         /*stage ('Preparing Dev environment') {
             agent any
             steps {
@@ -215,7 +215,7 @@ pipeline {
                 }
             }
         }*/
-        stage ('Removal Dev environment') {
+        /*stage ('Removal Dev environment') {
             agent {
                 docker { image 'jenkins/jnlp-agent-terraform'}
             }
@@ -238,7 +238,7 @@ pipeline {
                     '''
                 }
             }
-        }
+        }*/
         stage ('Preparing Prod environment') {
             agent any
             environment {
@@ -279,7 +279,7 @@ pipeline {
                                 apt update
                                 apt install sshpass -y
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/install_docker.yml --tags on_labs --vault_password_file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS"
+                                ansible-playbook sources/ansible/playbooks/install_docker.yml --tags on_labs --vault-password-file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS"
                             '''
                         }
                     }
@@ -289,7 +289,7 @@ pipeline {
                         script {
                             sh '''
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --vault_password_file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -l odoo_server
+                                ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --vault-password-file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -l odoo_server
                             '''
                         }
                     }
@@ -299,7 +299,7 @@ pipeline {
                         script {
                             sh '''
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --vault_password_file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -l ic_webapp_and_pgadmin_server
+                                ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --vault-password-file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -l ic_webapp_and_pgadmin_server
                             '''
                         }
                     }
@@ -309,7 +309,7 @@ pipeline {
                         script {
                             sh '''
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/deploy_ic_webapp.yml --vault_password_file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -l ic_webapp_and_pgadmin_server
+                                ansible-playbook sources/ansible/playbooks/deploy_ic_webapp.yml --vault-password-file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -l ic_webapp_and_pgadmin_server
                             '''
                         }
                     }
