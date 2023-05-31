@@ -175,12 +175,22 @@ pipeline {
                         }
                     }
                 }
+                stage('Ping Dev target hosts'){
+                    steps {
+                        script {
+                            sh '''
+                                export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
+                                ansible -m ping dev -o --private-key devops.pem
+                            '''
+                        }
+                    }
+                }
                 stage('Install requirements: Docker and python library for docker'){
                     steps {
                         script {
                             sh '''
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/install_docker.yml --tags dev --vault_password_file vault.key --private-key devops.pem
+                                ansible-playbook sources/ansible/playbooks/install_docker.yml --tags dev --vault_password_file vault.key --private-key devops.pem -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH"
                             '''
                         }
                     }
@@ -190,7 +200,7 @@ pipeline {
                         script {
                             sh '''
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --vault_password_file vault.key --private-key devops.pem
+                                ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --vault_password_file vault.key --private-key devops.pem -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH"
                             '''
                         }
                     }
@@ -200,7 +210,7 @@ pipeline {
                         script {
                             sh '''
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --vault_password_file vault.key --private-key devops.pem
+                                ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --vault_password_file vault.key --private-key devops.pem -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH"
                             '''
                         }
                     }
@@ -210,7 +220,7 @@ pipeline {
                         script {
                             sh '''
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/deploy_ic_webapp.yml --vault_password_file vault.key --private-key devops.pem
+                                ansible-playbook sources/ansible/playbooks/deploy_ic_webapp.yml --vault_password_file vault.key --private-key devops.pem -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH"
                             '''
                         }
                     }
@@ -271,14 +281,14 @@ pipeline {
                 SUDOPASS = credentials('sudopass')
             }
             stages{
-                stage('Ping target hosts'){
+                stage('Ping Prod target hosts'){
                     steps {
                         script {
                             sh '''
                                 apt update
                                 apt install sshpass -y
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible prod -m ping -o -vv --vault-password-file vault.key -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH"
+                                ansible prod -m ping -o --vault-password-file vault.key -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH"
                             '''
                         }
                     }
@@ -291,7 +301,7 @@ pipeline {
                             }
                             sh '''
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/install_docker.yml -vv --tags on_labs --vault-password-file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS"
+                                ansible-playbook sources/ansible/playbooks/install_docker.yml --tags on_labs --vault-password-file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH"
                             '''
                         }
                     }
@@ -301,7 +311,7 @@ pipeline {
                         script {
                             sh '''
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --vault-password-file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -l odoo_server
+                                ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --vault-password-file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH" -l odoo_server
                             '''
                         }
                     }
@@ -311,7 +321,7 @@ pipeline {
                         script {
                             sh '''
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --vault-password-file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -l ic_webapp_and_pgadmin_server
+                                ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --vault-password-file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH" -l ic_webapp_and_pgadmin_server
                             '''
                         }
                     }
@@ -321,7 +331,7 @@ pipeline {
                         script {
                             sh '''
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/deploy_ic_webapp.yml --vault-password-file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -l ic_webapp_and_pgadmin_server
+                                ansible-playbook sources/ansible/playbooks/deploy_ic_webapp.yml --vault-password-file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS" -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH" -l ic_webapp_and_pgadmin_server
                             '''
                         }
                     }
