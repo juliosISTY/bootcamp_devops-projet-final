@@ -269,6 +269,18 @@ pipeline {
                 SUDOPASS = credentials('sudopass')
             }
             stages{
+                stage('Ping target hosts'){
+                    steps {
+                        script {
+                            sh '''
+                                apt update
+                                apt install sshpass -y
+                                export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
+                                ansible prod -m ping -o -vv --vault-password-file vault.key
+                            '''
+                        }
+                    }
+                }
                 stage('Install requirements: Docker and python library for docker'){
                     steps {
                         script {
@@ -276,8 +288,6 @@ pipeline {
                                 input message: "Do you confirm the MEP of applications ?", ok: 'Yes'
                             }
                             sh '''
-                                apt update
-                                apt install sshpass -y
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
                                 ansible-playbook sources/ansible/playbooks/install_docker.yml -vv --tags on_labs --vault-password-file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS"
                             '''
