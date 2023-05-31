@@ -9,8 +9,8 @@ pipeline {
         INTERNAL_PORT = 8080
         EXTERNAL_PORT = 80
         PROJECT_NAME = "projet_final"
-        COMMUN_VARS_PATH = "./sources/ansible/roles/commun/main.yml"
-        SECRET_VARS_PATH = "./sources/ansible/secrets/credentials.yml"
+        COMMUN_VARS_PATH = "sources/ansible/roles/commun/main.yml"
+        SECRET_VARS_PATH = "sources/ansible/secrets/credentials.yml"
     }
     agent none
     stages {
@@ -278,7 +278,7 @@ pipeline {
                                 apt update
                                 apt install sshpass -y
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible prod -m ping -o -vv --vault-password-file vault.key -e "@$COMMUN_VARS_PATH" -e "@$SECRET_VARS_PATH"
+                                ansible prod -m ping -o -vv --vault-password-file vault.key -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH"
                             '''
                         }
                     }
