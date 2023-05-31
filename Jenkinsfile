@@ -278,7 +278,7 @@ pipeline {
                                 apt update
                                 apt install sshpass -y
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible prod -m ping -o -vv --vault-password-file vault.key -e "@$COMMUN_VARS_PATH" -e "$SECRET_VARS_PATH"
+                                ansible prod -m ping -o -vv --vault-password-file vault.key -e "@$COMMUN_VARS_PATH" -e "@$SECRET_VARS_PATH"
                             '''
                         }
                     }
