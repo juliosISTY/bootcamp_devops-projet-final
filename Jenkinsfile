@@ -279,7 +279,7 @@ pipeline {
                                 apt update
                                 apt install sshpass -y
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/install_docker.yml --tags on_labs --vault-password-file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS"
+                                ansible-playbook sources/ansible/playbooks/install_docker.yml -vv --tags on_labs --vault-password-file vault.key --extra-vars "ansible_sudo_pass=$SUDOPASS"
                             '''
                         }
                     }
