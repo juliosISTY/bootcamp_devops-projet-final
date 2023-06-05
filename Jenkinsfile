@@ -3,8 +3,8 @@ pipeline {
         ID_DOCKER = "julios2"
         IMAGE_NAME = "ic-webapp"
         SOURCES_PATH = "./sources/ic-webapp"
-        PGADMIN_SOURCE_VARS = "./sources/ansible/roles/pgadmin_role/vars/main.yml"
-        IC_WEBAPP_SOURCE_VARS = "./sources/ansible/roles/ic-webapp/vars/main.yml"
+        PGADMIN_SOURCE_VARS = "sources/ansible/roles/pgadmin_role/vars/main.yml"
+        IC_WEBAPP_SOURCE_VARS = "sources/ansible/roles/ic-webapp/vars/main.yml"
         DOCKERFILE_NAME = "Dockerfile_v2"
         INTERNAL_PORT = 8080
         EXTERNAL_PORT = 80
