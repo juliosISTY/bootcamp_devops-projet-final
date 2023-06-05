@@ -121,14 +121,14 @@ pipeline {
                         chmod 400 devops.pem
                         cd ./sources/terraform/app
                         terraform init
-                        terraform destroy --auto-approve
-                        #terraform plan
-                        #terraform apply --auto-approve
+                        #terraform destroy --auto-approve
+                        terraform plan
+                        terraform apply --auto-approve
                     '''
                 }
             }
         }
-        /*stage ('Preparing Dev environment') {
+        stage ('Preparing Dev environment') {
             agent any
             steps {
                 script {
@@ -200,7 +200,7 @@ pipeline {
                         script {
                             sh '''
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --vault-password-file vault.key --private-key devops.pem -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH"
+                                ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --vault-password-file vault.key --private-key devops.pem -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH" -l aws_ec2_server
                             '''
                         }
                     }
@@ -210,7 +210,7 @@ pipeline {
                         script {
                             sh '''
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --vault-password-file vault.key --private-key devops.pem -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH"
+                                ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --vault-password-file vault.key --private-key devops.pem -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH" -l aws_ec2_server
                             '''
                         }
                     }
@@ -220,7 +220,7 @@ pipeline {
                         script {
                             sh '''
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/deploy_ic_webapp.yml --vault-password-file vault.key --private-key devops.pem -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH"
+                                ansible-playbook sources/ansible/playbooks/deploy_ic_webapp.yml --vault-password-file vault.key --private-key devops.pem -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH" -l aws_ec2_server
                             '''
                         }
                     }
@@ -250,7 +250,7 @@ pipeline {
                     '''
                 }
             }
-        }*/
+        }
         /*stage ('Preparing Prod environment') {
             agent any
             environment {
