@@ -121,14 +121,14 @@ pipeline {
                         chmod 400 devops.pem
                         cd ./sources/terraform/app
                         terraform init
-                        #terraform destroy --auto-approve
-                        terraform plan
-                        terraform apply --auto-approve
+                        terraform destroy --auto-approve
+                        #terraform plan
+                        #terraform apply --auto-approve
                     '''
                 }
             }
         }
-        stage ('Preparing Dev environment') {
+        /*stage ('Preparing Dev environment') {
             agent any
             steps {
                 script {
@@ -250,7 +250,7 @@ pipeline {
                     '''
                 }
             }
-        }
+        }*/
         /*stage ('Preparing Prod environment') {
             agent any
             environment {
