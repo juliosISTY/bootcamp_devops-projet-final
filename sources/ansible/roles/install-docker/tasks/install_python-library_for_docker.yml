@@ -43,8 +43,13 @@
 - name: Install docker python
   pip:
     name: docker-py
+    executable: /usr/local/bin/pip3
+  when: ansible_distribution == "Amazon"
+- name: Install docker python
+  pip:
+    name: docker-py
     executable: /usr/bin/pip3
-  when: ansible_distribution == "Amazon" or ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian"
 
 # Create network for applications
 - name : "create network"
