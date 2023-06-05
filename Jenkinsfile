@@ -121,14 +121,14 @@ pipeline {
                         chmod 400 devops.pem
                         cd ./sources/terraform/app
                         terraform init
-                        terraform destroy --auto-approve
-                        #terraform plan
-                        #terraform apply --auto-approve
+                        #terraform destroy --auto-approve
+                        terraform plan
+                        terraform apply --auto-approve
                     '''
                 }
             }
         }
-        /*stage ('Preparing Dev environment') {
+        stage ('Preparing Dev environment') {
             agent any
             steps {
                 script {
@@ -250,13 +250,13 @@ pipeline {
                     '''
                 }
             }
-        }*/
-        /*stage ('Preparing Prod environment') {
+        }
+        stage ('Preparing Prod environment') {
             agent any
             environment {
                 HOST_ODOO_IP_PROD = "127.0.0.1"   /*default value you can ignore*/
-                /*HOST_PGADMIN_IP_PROD = "127.0.0.1"    /*default value you can ignore*/
-            /*}
+                HOST_PGADMIN_IP_PROD = "127.0.0.1"    /*default value you can ignore*/
+            }
             steps {
                 script {
                     sh '''
@@ -271,8 +271,8 @@ pipeline {
                     '''
                 }
             }
-        }*/
-        /*stage ('Deploy applications in Prod environment') {
+        }
+        stage ('Deploy applications in Prod environment') {
             agent { docker { image 'registry.gitlab.com/robconnolly/docker-ansible:latest' } }
             when {
                        expression { GIT_BRANCH == 'origin/main' }
@@ -337,6 +337,6 @@ pipeline {
                     }
                 }
             }
-        }*/
+        }
     }
 }
