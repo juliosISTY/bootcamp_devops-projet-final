@@ -96,7 +96,7 @@ pipeline {
                 }
             }
         }*/
-        /*stage ('Build EC2 instance on AWS with Terraform') {
+        stage ('Build EC2 instance on AWS with Terraform') {
             agent {
                 docker { image 'jenkins/jnlp-agent-terraform'}
             }
@@ -144,7 +144,7 @@ pipeline {
                     '''
                 }
             }
-        }*/
+        }
         stage('Preparing Ansible environment') {
             agent any
             environment {
@@ -160,7 +160,7 @@ pipeline {
                 }
             }
         }
-        /*stage ('Deploy applications in Dev environment') {
+        stage ('Deploy applications in Dev environment') {
             agent { docker { image 'registry.gitlab.com/robconnolly/docker-ansible:latest' } }
             stages{
                 stage('Test all playbooks syntax'){
@@ -190,7 +190,7 @@ pipeline {
                         script {
                             sh '''
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/install_docker.yml --tags dev --vault_password_file vault.key --private-key devops.pem -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH"
+                                ansible-playbook sources/ansible/playbooks/install_docker.yml --tags dev --vault-password-file vault.key --private-key devops.pem -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH"
                             '''
                         }
                     }
@@ -200,7 +200,7 @@ pipeline {
                         script {
                             sh '''
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --vault_password_file vault.key --private-key devops.pem -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH"
+                                ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --vault-password-file vault.key --private-key devops.pem -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH"
                             '''
                         }
                     }
@@ -210,7 +210,7 @@ pipeline {
                         script {
                             sh '''
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --vault_password_file vault.key --private-key devops.pem -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH"
+                                ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --vault-password-file vault.key --private-key devops.pem -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH"
                             '''
                         }
                     }
@@ -220,14 +220,14 @@ pipeline {
                         script {
                             sh '''
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/deploy_ic_webapp.yml --vault_password_file vault.key --private-key devops.pem -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH"
+                                ansible-playbook sources/ansible/playbooks/deploy_ic_webapp.yml --vault-password-file vault.key --private-key devops.pem -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH"
                             '''
                         }
                     }
                 }
             }
-        }*/
-        /*stage ('Removal Dev environment') {
+        }
+        stage ('Removal Dev environment') {
             agent {
                 docker { image 'jenkins/jnlp-agent-terraform'}
             }
@@ -250,13 +250,13 @@ pipeline {
                     '''
                 }
             }
-        }*/
-        stage ('Preparing Prod environment') {
+        }
+        /*stage ('Preparing Prod environment') {
             agent any
             environment {
                 HOST_ODOO_IP_PROD = "127.0.0.1"   /*default value you can ignore*/
-                HOST_PGADMIN_IP_PROD = "127.0.0.1"    /*default value you can ignore*/
-            }
+                /*HOST_PGADMIN_IP_PROD = "127.0.0.1"    /*default value you can ignore*/
+            /*}
             steps {
                 script {
                     sh '''
@@ -271,8 +271,8 @@ pipeline {
                     '''
                 }
             }
-        }
-        stage ('Deploy applications in Prod environment') {
+        }*/
+        /*stage ('Deploy applications in Prod environment') {
             agent { docker { image 'registry.gitlab.com/robconnolly/docker-ansible:latest' } }
             when {
                        expression { GIT_BRANCH == 'origin/main' }
@@ -288,7 +288,7 @@ pipeline {
                                 apt update
                                 apt install sshpass -y
                                 export ANSIBLE_CONFIG=$(pwd)/sources/ansible/ansible.cfg
-                                ansible prod -m ping -o --vault-password-file vault.key -e "@$(pwd)/$COMMUN_VARS_PATH" -e "@$(pwd)/$SECRET_VARS_PATH"
+                                ansible prod -m ping -o --vault-password-file vault.key -e "@$(pwd)/$SECRET_VARS_PATH"
                             '''
                         }
                     }
@@ -337,6 +337,6 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
     }
 }

@@ -11,6 +11,8 @@
 - hosts: prod
   become: true
   tags: on_labs
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
   vars_files:
     - ../roles/commun/main.yml
     - ../secrets/credentials.yml

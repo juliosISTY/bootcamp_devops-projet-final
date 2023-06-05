@@ -1,5 +1,4 @@
 ---
 # Commun vars for all roles
-ansible_python_interpreter: /usr/bin/python3
 docker_id : julios2
 network_name: ic_network
