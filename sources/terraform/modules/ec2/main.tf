@@ -1,5 +1,5 @@
 resource "aws_instance" "ec2_vm" {
-  ami           = "ami-033b95fb8079dc481"
+  ami           = "ami-0261755bbcb8c4a84"
   instance_type = var.ins_type
   key_name      = var.ssh_key
   tags          = var.tag_name
