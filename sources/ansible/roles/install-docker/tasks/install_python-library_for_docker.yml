@@ -27,7 +27,8 @@
   command: python2.7 /tmp/get-pip.py
   when: ansible_distribution == "CentOS"
 - name: Install docker python
-  pip: name=docker-py
+  pip:
+    name: docker==4.4.4    #docker-py (is for python 2.6 normally)
   when: ansible_distribution == "CentOS"
 
 # For python 3 version
@@ -42,12 +43,12 @@
   when: ansible_distribution == "Amazon"
 - name: Install docker python
   pip:
-    name: docker-py
+    name: docker
     executable: /usr/local/bin/pip3
   when: ansible_distribution == "Amazon"
 - name: Install docker python
   pip:
-    name: docker-py
+    name: docker
     executable: /usr/bin/pip3
   when: ansible_os_family == "Debian"
 
